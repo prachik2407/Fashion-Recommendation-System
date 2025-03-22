@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fashion Finder</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f9f9f9;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 1rem;
+            text-align: center;
+        }
+        h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+        .upload-section {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 2rem;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        /* Spinner */
+        #loadingSpinner {
+            display: none;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Fashion Finder</h1>
+    </header>
+    <main>
+        <section class="upload-section">
+            <h2 class="text-center">Upload an Image</h2>
+            <!-- Flash messages for displaying warnings or alerts -->
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="alert alert-warning" role="alert">
+                        {{ messages[0] }}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            <!-- Form for uploading images -->
+            <form id="uploadForm" action="/" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <input type="file" class="form-control-file" name="file" accept=".jpg, .jpeg, .png" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Upload Image</button>
+            </form>
+            <!-- Loading spinner to show during file upload -->
+            <div id="loadingSpinner" class="text-center">
+                <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        </section>
+        <!-- Display results if available -->
+        {% if results %}
+            <div class="container">
+                <h1 class="text-center my-4">Similar Fashion Products</h1>
+                <div class="row">
+                    {% for result in results %}
+                        <div class="col-md-4">
+                            <div class="card mb-4">
+                                <!-- Image of the similar product -->
+                                <img src="{{ url_for('dataset_image_file', filename=result.filename) }}" class="card-img-top" alt="{{ result.productDisplayName }}">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ result.productDisplayName }}</h5>
+                                    <p class="card-text">Similarity: {{ result.similarity }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <!-- Script to change the form to allow uploading another image -->
+                <script>
+                    document.addEventListener("DOMContentLoaded", function() {
+                        const form = document.getElementById('uploadForm');
+                        form.innerHTML = `
+                            <div class="form-group">
+                                <input type="file" class="form-control-file" name="file" accept=".jpg, .jpeg, .png" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">Upload Another Image</button>
+                        `;
+                    });
+                </script>
+            </div>
+        {% endif %}
+    </main>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        // Show the loading spinner when the form is submitted
+        document.getElementById('uploadForm').addEventListener('submit', function() {
+            document.getElementById('loadingSpinner').style.display = 'block';
+        });
+    </script>
+</body>
+</html>
